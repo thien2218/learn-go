@@ -1,8 +1,9 @@
 package algorithms
 
-func merge(left []int, right []int) []int {
+func countAndMerge(left []int, right []int) ([]int, int) {
 	nLeft := len(left)
 	nRight := len(right)
+	count := 0
 
 	arr := make([]int, 0, nLeft+nRight)
 
@@ -15,6 +16,7 @@ func merge(left []int, right []int) []int {
 			i++
 		} else {
 			arr = append(arr, right[j])
+			count += nLeft - i
 			j++
 		}
 
@@ -27,17 +29,20 @@ func merge(left []int, right []int) []int {
 		}
 	}
 
-	return arr
+	return arr, count
 }
 
-func MergeSort(arr []int) []int {
+func Inversion(arr []int) ([]int, int) {
 	n := len(arr)
 
 	if n == 1 {
-		return []int{arr[0]}
+		return []int{arr[0]}, 0
 	}
 
 	mid := n / 2
 
-	return merge(MergeSort(arr[:mid]), MergeSort(arr[mid:]))
+	left, c1 := Inversion(arr[:mid])
+	right, c2 := Inversion(arr[mid:])
+	arr, c3 := countAndMerge(left, right)
+	return arr, c1 + c2 + c3
 }
