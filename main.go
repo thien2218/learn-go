@@ -1,37 +1,14 @@
 package main
 
 import (
-	"bufio"
 	"fmt"
-	"log"
-	"os"
-	"strconv"
 
 	"github.com/thien2218/learn-go/algorithms"
 )
 
 func main() {
-	arr := make([]int, 0, 100000)
-	file, err := os.Open("intArr.txt")
+	arr := []int{9, 11, 14, 8, 19, 4, 2, 17, 16, 7, 12, 6, 5, 15, 13, 3, 1, 20, 18, 10}
 
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	defer file.Close()
-
-	scanner := bufio.NewScanner(file)
-
-	for scanner.Scan() {
-		num, err := strconv.Atoi(scanner.Text())
-
-		if err != nil {
-			log.Fatal(err)
-		}
-
-		arr = append(arr, num)
-	}
-
-	_, count := algorithms.Inversion(arr)
-	fmt.Println(count)
+	algorithms.QuickSort(arr, 0, len(arr)-1)
+	fmt.Println(arr)
 }
