@@ -1,8 +1,6 @@
 package algorithms
 
-import (
-	"math/rand"
-)
+import "math/rand"
 
 func partition(arr []int, left, right int) int {
 	i := left + 1
