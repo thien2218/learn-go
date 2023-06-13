@@ -36,7 +36,7 @@ func Inversion(arr []int) ([]int, int) {
 	n := len(arr)
 
 	if n == 1 {
-		return []int{arr[0]}, 0
+		return arr, 0
 	}
 
 	mid := n / 2

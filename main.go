@@ -2,6 +2,8 @@ package main
 
 import (
 	"bufio"
+	"fmt"
+
 	// "fmt"
 	"log"
 	"os"
@@ -11,7 +13,8 @@ import (
 )
 
 func main() {
-
+	var arr [2]int
+	fmt.Println(arr)
 }
 
 func handleError(err error) {

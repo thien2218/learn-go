@@ -34,7 +34,7 @@ func MergeSort(arr []int) []int {
 	n := len(arr)
 
 	if n == 1 {
-		return []int{arr[0]}
+		return arr
 	}
 
 	mid := n / 2
