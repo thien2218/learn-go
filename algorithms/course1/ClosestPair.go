@@ -1,8 +1,6 @@
 package algorithms
 
-import (
-	"math"
-)
+import "math"
 
 type Point struct {
 	x float32
@@ -17,7 +15,13 @@ func (p1 Point) distanceTo(p2 Point) float32 {
 	return euclidean
 }
 
+// TODO: implement a sorting algorithm that runs in O(n) base on
+// 		the assumption that coordinates can only be real numbers
+
 func closestSplitPair(p Point, py []Point, min float32) ([2]Point, float32) {
+	// TODO: Use optimized sorting algorithm to refine closestSplitPair
+	// subroutine running time
+
 	sy := make([]Point, 0)
 	var pair [2]Point
 
@@ -43,9 +47,9 @@ func closestSplitPair(p Point, py []Point, min float32) ([2]Point, float32) {
 }
 
 func closestPair(px, py []Point) ([2]Point, float32) {
-	// Check for base case when length = 2 (right - left = 1)
 	l := len(px)
 
+	// Check for base case when length = 2 (right - left = 1)
 	if l == 2 {
 		pair := [2]Point{px[0], px[1]}
 		return pair, px[0].distanceTo(px[1])
@@ -61,5 +65,5 @@ func closestPair(px, py []Point) ([2]Point, float32) {
 }
 
 func FindClosestPair(points []Point) {
-
+	// TODO: initialize closestPair algorithm and run it with this function
 }
