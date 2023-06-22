@@ -91,19 +91,22 @@ func radixSortY(arr []Point) []Point {
 	return output
 }
 
-func closestSplitPair(p Point, py []Point, min float32) ([2]Point, float32) {
-	// TODO: Use optimized sorting algorithm to refine closestSplitPair
-	// 		subroutine running time
-
+func closestSplitPair(px []Point, mid int, min float32) ([2]Point, float32) {
 	sy := make([]Point, 0)
 	var pair [2]Point
 
-	for _, point := range py {
-		if point.x < p.x+min && point.x > p.x-min {
-			sy = append(sy, point)
-		}
+	upper := px[mid].x + min
+	lower := px[mid].x - min
+
+	for i := mid; px[i].x >= lower; i-- {
+		sy = append(sy, px[i])
 	}
 
+	for j := mid + 1; px[j].x <= upper; j++ {
+		sy = append(sy, px[j])
+	}
+
+	radixSortY(sy)
 	l := len(sy)
 
 	for i := 0; i < l; i++ {
@@ -119,7 +122,7 @@ func closestSplitPair(p Point, py []Point, min float32) ([2]Point, float32) {
 	return pair, min
 }
 
-func closestPair(px, py []Point) ([2]Point, float32) {
+func closestPair(px []Point) ([2]Point, float32) {
 	l := len(px)
 
 	if l == 2 {
@@ -129,18 +132,16 @@ func closestPair(px, py []Point) ([2]Point, float32) {
 
 	mid := l / 2
 
-	_, d1 := closestPair(px[:mid+1], py)
-	_, d2 := closestPair(px[mid:], py)
+	_, d1 := closestPair(px[:mid+1])
+	_, d2 := closestPair(px[mid:])
 
 	min := float32(math.Min(float64(d1), float64(d2)))
-	return closestSplitPair(px[mid+1], py, min)
+	return closestSplitPair(px, mid+1, min)
 }
 
 func FindClosestPair(points []Point) (Point, Point, float32) {
 	px := radixSortX(points)
-	py := radixSortY(points)
-
-	p, d := closestPair(px, py)
+	p, d := closestPair(px)
 
 	return p[0], p[1], d
 }

@@ -1,5 +1,12 @@
 package algorithms
 
+import "log"
+
+type WeightedEdge[N Node] struct {
+	endVertex N
+	weight    float64
+}
+
 type MultiGraph[N Node] MultiDiGraph[N]
 
 func insertToMGraph[N Node](graph map[N][]WeightedEdge[N], vertex N, edges ...WeightedEdge[N]) {
@@ -17,28 +24,48 @@ func insertToMGraph[N Node](graph map[N][]WeightedEdge[N], vertex N, edges ...We
 }
 
 func (mg MultiGraph[N]) Insert(vertex N, edges ...WeightedEdge[N]) {
-	insertToMGraph[N](mg, vertex, edges...)
+	graph := mg.graph
+	insertToMGraph[N](graph, vertex, edges...)
 
 	for weight, edge := range edges {
 		newEdge := new(WeightedEdge[N])
 		newEdge.endVertex = vertex
 		newEdge.weight = float64(weight)
-		mg[edge.endVertex] = append(mg[edge.endVertex], *newEdge)
+		graph[edge.endVertex] = append(graph[edge.endVertex], *newEdge)
+	}
+}
+
+func (mg MultiGraph[N]) Update(vertex N, edgeIndexes []int, weights []float64) {
+	if len(edgeIndexes) != len(weights) {
+		log.Fatal("Index list size must be the same as weight list!")
+	}
+
+	for i, index := range edgeIndexes {
+		mg.graph[vertex][index].weight = weights[i]
+		otherVertex := mg.graph[vertex][index].endVertex
+
+		for j, edge := range mg.graph[otherVertex] {
+			if edge.endVertex == vertex {
+				mg.graph[otherVertex][j].weight = weights[i]
+			}
+		}
 	}
 }
 
 func (mg MultiGraph[N]) Delete(vertex N) {
-	for _, edge := range mg[vertex] {
-		l := len(mg[edge.endVertex])
+	graph := mg.graph
+
+	for _, edge := range graph[vertex] {
+		l := len(graph[edge.endVertex])
 		for i := 0; i < l; i++ {
-			if mg[edge.endVertex][i].endVertex == vertex {
-				mg[edge.endVertex][i], mg[edge.endVertex][l-1] = mg[edge.endVertex][l-1], mg[edge.endVertex][i]
-				mg[edge.endVertex] = mg[edge.endVertex][:l-1]
+			if graph[edge.endVertex][i].endVertex == vertex {
+				graph[edge.endVertex][i], graph[edge.endVertex][l-1] = graph[edge.endVertex][l-1], graph[edge.endVertex][i]
+				graph[edge.endVertex] = graph[edge.endVertex][:l-1]
 				i--
 				l--
 			}
 		}
 	}
 
-	deleteVertex[N](mg, vertex)
+	deleteVertex[N](graph, vertex)
 }
