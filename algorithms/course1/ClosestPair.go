@@ -1,6 +1,9 @@
 package algorithms
 
-import "math"
+import (
+	"math"
+	"unsafe"
+)
 
 type Point struct {
 	x float32
@@ -15,12 +18,82 @@ func (p1 Point) distanceTo(p2 Point) float32 {
 	return euclidean
 }
 
-// TODO: implement a sorting algorithm that runs in O(n) base on
-// 		the assumption that coordinates can only be real numbers
+const (
+	signMask uint32 = 1 << 31
+	fullMask uint32 = math.MaxUint32
+)
+
+// float32ToUint32 converts a float32 number to a uint32 number
+func float32ToUint32(f float32) uint32 {
+	u := *(*uint32)(unsafe.Pointer(&f))
+	if u&signMask == signMask {
+		u = ^u
+	} else {
+		u |= signMask
+	}
+	return u
+}
+
+// getBit returns the bit at the given position of the uint32 number
+func getBit(u uint32, pos int) int {
+	return int((u >> pos) & 1)
+}
+
+// radixSortX sorts the given slice of Point structs based on their x values using Radix Sort
+func radixSortX(arr []Point) []Point {
+	n := len(arr)
+	output := make([]Point, n)
+
+	for pos := 0; pos < 32; pos++ {
+		count := [2]int{0, 0}
+
+		for _, p := range arr {
+			u := float32ToUint32(p.x)
+			count[getBit(u, pos)]++
+		}
+
+		count[1] += count[0]
+
+		for i := n - 1; i >= 0; i-- {
+			u := float32ToUint32(arr[i].x)
+			bit := getBit(u, pos)
+			count[bit]--
+			output[count[bit]] = arr[i]
+		}
+	}
+
+	return output
+}
+
+// radixSortY sorts the given slice of Point structs based on their y values using Radix Sort
+func radixSortY(arr []Point) []Point {
+	n := len(arr)
+	output := make([]Point, n)
+
+	for pos := 0; pos < 32; pos++ {
+		count := [2]int{0, 0}
+
+		for _, p := range arr {
+			u := float32ToUint32(p.y)
+			count[getBit(u, pos)]++
+		}
+
+		count[1] += count[0]
+
+		for i := n - 1; i >= 0; i-- {
+			u := float32ToUint32(arr[i].y)
+			bit := getBit(u, pos)
+			count[bit]--
+			output[count[bit]] = arr[i]
+		}
+	}
+
+	return output
+}
 
 func closestSplitPair(p Point, py []Point, min float32) ([2]Point, float32) {
 	// TODO: Use optimized sorting algorithm to refine closestSplitPair
-	// subroutine running time
+	// 		subroutine running time
 
 	sy := make([]Point, 0)
 	var pair [2]Point
@@ -49,7 +122,6 @@ func closestSplitPair(p Point, py []Point, min float32) ([2]Point, float32) {
 func closestPair(px, py []Point) ([2]Point, float32) {
 	l := len(px)
 
-	// Check for base case when length = 2 (right - left = 1)
 	if l == 2 {
 		pair := [2]Point{px[0], px[1]}
 		return pair, px[0].distanceTo(px[1])
@@ -64,6 +136,11 @@ func closestPair(px, py []Point) ([2]Point, float32) {
 	return closestSplitPair(px[mid+1], py, min)
 }
 
-func FindClosestPair(points []Point) {
-	// TODO: initialize closestPair algorithm and run it with this function
+func FindClosestPair(points []Point) (Point, Point, float32) {
+	px := radixSortX(points)
+	py := radixSortY(points)
+
+	p, d := closestPair(px, py)
+
+	return p[0], p[1], d
 }
