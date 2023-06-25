@@ -2,15 +2,21 @@ package algorithms
 
 import "log"
 
-type MultiDiGraph[N Node] struct {
-	graph multiGraph[N]
+type multiDiGraph[V Vertex] struct {
+	graph multi[V]
 }
 
-func (mdg MultiDiGraph[N]) Insert(vertex N, edges ...WeightedEdge[N]) {
-	insertToMGraph[N](mdg.graph, vertex, edges...)
+func NewMultiDiGraph[V Vertex]() *multiDiGraph[V] {
+	mdg := new(multiDiGraph[V])
+	mdg.graph = make(multi[V])
+	return mdg
 }
 
-func (mdg MultiDiGraph[N]) Update(vertex N, edgeIndexes []int, weights []float64) {
+func (mdg multiDiGraph[V]) Insert(vertex V, edges ...WeightedEdge[V]) {
+	insertToMGraph[V](mdg.graph, vertex, edges...)
+}
+
+func (mdg multiDiGraph[V]) Update(vertex V, edgeIndexes []int, weights []float64) {
 	if len(edgeIndexes) != len(weights) {
 		log.Fatal("Index list size must be the same as weight list!")
 	}
@@ -20,6 +26,6 @@ func (mdg MultiDiGraph[N]) Update(vertex N, edgeIndexes []int, weights []float64
 	}
 }
 
-func (mdg MultiDiGraph[N]) Delete(vertex N) {
-	deleteVertex[N](mdg.graph, vertex)
+func (mdg multiDiGraph[V]) Delete(vertex V) {
+	deleteVertex[V](mdg.graph, vertex)
 }

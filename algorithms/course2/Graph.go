@@ -1,59 +1,27 @@
 package algorithms
 
-import "log"
-
-type Graph[N Node] struct {
-	graph graph[N]
+type graph[V Vertex] struct {
+	graph simple[V]
 }
 
-func checkVertex[N Node, E interface{}](graph map[N]E, vertex N) {
-	if _, exist := graph[vertex]; !exist {
-		log.Fatal("Vertex does not exist in graph!")
-	}
+func NewGraph[V Vertex]() *graph[V] {
+	g := new(graph[V])
+	g.graph = make(simple[V])
+	return g
 }
 
-func deleteVertex[N Node, E interface{}](graph map[N]E, vertex N) {
-	checkVertex[N](graph, vertex)
-	delete(graph, vertex)
-}
-
-func insertToGraph[N Node](graph map[N]map[N]float64, vertex N, edges map[N]float64) {
-	if _, exist := graph[vertex]; !exist {
-		graph[vertex] = edges
-	}
-
-	for endVertex, weight := range edges {
-		if _, exist := graph[endVertex]; !exist {
-			graph[endVertex] = make(map[N]float64)
-		}
-		if _, exist := graph[vertex][endVertex]; !exist {
-			graph[vertex][endVertex] = weight
-		}
-	}
-}
-
-func updateGraph[N Node](graph map[N]map[N]float64, vertex N, edges map[N]float64) {
-	checkVertex[N](graph, vertex)
-
-	for endVertex, weight := range edges {
-		if _, exist := graph[vertex][endVertex]; exist {
-			graph[vertex][endVertex] = weight
-		}
-	}
-}
-
-func (g Graph[N]) Insert(vertex N, edges map[N]float64) {
+func (g graph[V]) Insert(vertex V, edges map[V]float64) {
 	graph := g.graph
-	insertToGraph[N](g.graph, vertex, edges)
+	insertToGraph[V](g.graph, vertex, edges)
 
 	for endVertex, weight := range edges {
 		graph[endVertex][vertex] = weight
 	}
 }
 
-func (g Graph[N]) Update(vertex N, edges map[N]float64) {
+func (g graph[V]) Update(vertex V, edges map[V]float64) {
 	graph := g.graph
-	updateGraph[N](g.graph, vertex, edges)
+	updateGraph[V](g.graph, vertex, edges)
 
 	for endVertex, weight := range edges {
 		if _, exist := g.graph[endVertex]; exist {
@@ -62,12 +30,12 @@ func (g Graph[N]) Update(vertex N, edges map[N]float64) {
 	}
 }
 
-func (g Graph[N]) Delete(vertex N) {
+func (g graph[V]) Delete(vertex V) {
 	graph := g.graph
 
 	for endVertex := range graph[vertex] {
 		delete(graph[endVertex], vertex)
 	}
 
-	deleteVertex[N](g.graph, vertex)
+	deleteVertex[V](g.graph, vertex)
 }

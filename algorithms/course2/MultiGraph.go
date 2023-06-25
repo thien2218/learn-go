@@ -2,40 +2,29 @@ package algorithms
 
 import "log"
 
-type WeightedEdge[N Node] struct {
-	endVertex N
-	weight    float64
+type multiGraph[V Vertex] struct {
+	graph multi[V]
 }
 
-type MultiGraph[N Node] MultiDiGraph[N]
-
-func insertToMGraph[N Node](graph map[N][]WeightedEdge[N], vertex N, edges ...WeightedEdge[N]) {
-	if _, exist := graph[vertex]; !exist {
-		graph[vertex] = edges
-	} else {
-		graph[vertex] = append(graph[vertex], edges...)
-	}
-
-	for _, edge := range edges {
-		if _, exist := graph[edge.endVertex]; !exist {
-			graph[edge.endVertex] = make([]WeightedEdge[N], 0)
-		}
-	}
+func NewMultiGraph[V Vertex]() *multiGraph[V] {
+	mg := new(multiGraph[V])
+	mg.graph = make(multi[V])
+	return mg
 }
 
-func (mg MultiGraph[N]) Insert(vertex N, edges ...WeightedEdge[N]) {
+func (mg multiGraph[V]) Insert(vertex V, edges ...WeightedEdge[V]) {
 	graph := mg.graph
-	insertToMGraph[N](graph, vertex, edges...)
+	insertToMGraph[V](graph, vertex, edges...)
 
 	for weight, edge := range edges {
-		newEdge := new(WeightedEdge[N])
+		newEdge := new(WeightedEdge[V])
 		newEdge.endVertex = vertex
 		newEdge.weight = float64(weight)
 		graph[edge.endVertex] = append(graph[edge.endVertex], *newEdge)
 	}
 }
 
-func (mg MultiGraph[N]) Update(vertex N, edgeIndexes []int, weights []float64) {
+func (mg multiGraph[V]) Update(vertex V, edgeIndexes []int, weights []float64) {
 	if len(edgeIndexes) != len(weights) {
 		log.Fatal("Index list size must be the same as weight list!")
 	}
@@ -52,7 +41,7 @@ func (mg MultiGraph[N]) Update(vertex N, edgeIndexes []int, weights []float64) {
 	}
 }
 
-func (mg MultiGraph[N]) Delete(vertex N) {
+func (mg multiGraph[V]) Delete(vertex V) {
 	graph := mg.graph
 
 	for _, edge := range graph[vertex] {
@@ -67,5 +56,5 @@ func (mg MultiGraph[N]) Delete(vertex N) {
 		}
 	}
 
-	deleteVertex[N](graph, vertex)
+	deleteVertex[V](graph, vertex)
 }
