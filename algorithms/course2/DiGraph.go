@@ -1,23 +1,31 @@
 package algorithms
 
-type diGraph[V Vertex] struct {
-	graph simple[V]
+import "log"
+
+type DiGraph[V Vertex] struct {
+	graph adjacencyList[V]
 }
 
-func NewDiGraph[V Vertex]() diGraph[V] {
-	dg := new(diGraph[V])
-	dg.graph = make(simple[V])
-	return *dg
+func NewMultiDiGraph[V Vertex]() *DiGraph[V] {
+	mg := new(DiGraph[V])
+	mg.graph = make(adjacencyList[V])
+	return mg
 }
 
-func (dg diGraph[V]) Insert(vertex V, edges map[V]float64) {
-	insertToGraph[V](dg.graph, vertex, edges)
+func (mg DiGraph[V]) Insert(vertex V, edges ...Edge[V]) {
+	insertToGraph[V](mg.graph, vertex, edges...)
 }
 
-func (dg diGraph[V]) Update(vertex V, edges map[V]float64) {
-	updateGraph[V](dg.graph, vertex, edges)
+func (mg DiGraph[V]) Update(vertex V, edgeIndexes []int, weights []float64) {
+	if len(edgeIndexes) != len(weights) {
+		log.Fatal("Index list size must be the same as weight list!")
+	}
+
+	for i, index := range edgeIndexes {
+		mg.graph[vertex][index].weight = weights[i]
+	}
 }
 
-func (dg diGraph[V]) Delete(vertex V) {
-	deleteVertex[V](dg.graph, vertex)
+func (mg DiGraph[V]) Delete(vertex V) {
+	deleteVertex[V](mg.graph, vertex)
 }

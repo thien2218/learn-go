@@ -5,10 +5,6 @@ import (
 	"math"
 )
 
-func HeapSort(arr []int) {
-	// TODO: Implement heapSort algorithm
-}
-
 type heap struct {
 	nodes    []int
 	heapType string

@@ -1,41 +1,60 @@
 package algorithms
 
-type graph[V Vertex] struct {
-	graph simple[V]
+import "log"
+
+type Graph[V Vertex] struct {
+	graph adjacencyList[V]
 }
 
-func NewGraph[V Vertex]() *graph[V] {
-	g := new(graph[V])
-	g.graph = make(simple[V])
+func NewMultiGraph[V Vertex]() *Graph[V] {
+	g := new(Graph[V])
+	g.graph = make(adjacencyList[V])
 	return g
 }
 
-func (g graph[V]) Insert(vertex V, edges map[V]float64) {
+func (g Graph[V]) Insert(vertex V, edges ...Edge[V]) {
 	graph := g.graph
-	insertToGraph[V](g.graph, vertex, edges)
+	insertToGraph[V](graph, vertex, edges...)
 
-	for endVertex, weight := range edges {
-		graph[endVertex][vertex] = weight
+	for weight, edge := range edges {
+		newEdge := new(Edge[V])
+		newEdge.endVertex = vertex
+		newEdge.weight = float64(weight)
+		graph[edge.endVertex] = append(graph[edge.endVertex], *newEdge)
 	}
 }
 
-func (g graph[V]) Update(vertex V, edges map[V]float64) {
-	graph := g.graph
-	updateGraph[V](g.graph, vertex, edges)
+func (g Graph[V]) Update(vertex V, edgeIndexes []int, weights []float64) {
+	if len(edgeIndexes) != len(weights) {
+		log.Fatal("Index list size must be the same as weight list!")
+	}
 
-	for endVertex, weight := range edges {
-		if _, exist := g.graph[endVertex]; exist {
-			graph[endVertex][vertex] = weight
+	for i, index := range edgeIndexes {
+		g.graph[vertex][index].weight = weights[i]
+		otherVertex := g.graph[vertex][index].endVertex
+
+		for j, edge := range g.graph[otherVertex] {
+			if edge.endVertex == vertex {
+				g.graph[otherVertex][j].weight = weights[i]
+			}
 		}
 	}
 }
 
-func (g graph[V]) Delete(vertex V) {
+func (g Graph[V]) Delete(vertex V) {
 	graph := g.graph
 
-	for endVertex := range graph[vertex] {
-		delete(graph[endVertex], vertex)
+	for _, edge := range graph[vertex] {
+		l := len(graph[edge.endVertex])
+		for i := 0; i < l; i++ {
+			if graph[edge.endVertex][i].endVertex == vertex {
+				graph[edge.endVertex][i], graph[edge.endVertex][l-1] = graph[edge.endVertex][l-1], graph[edge.endVertex][i]
+				graph[edge.endVertex] = graph[edge.endVertex][:l-1]
+				i--
+				l--
+			}
+		}
 	}
 
-	deleteVertex[V](g.graph, vertex)
+	deleteVertex[V](graph, vertex)
 }

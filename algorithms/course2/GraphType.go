@@ -1,27 +1,49 @@
 package algorithms
 
-import "golang.org/x/exp/constraints"
+import (
+	"log"
+
+	"golang.org/x/exp/constraints"
+)
 
 type Vertex interface {
 	constraints.Ordered | *interface{}
 }
 
-type WeightedEdge[V Vertex] struct {
+type Edge[V Vertex] struct {
 	endVertex V
 	weight    float64
 }
 
 type IGraph[V Vertex] interface {
-	Insert(vertex V, edges map[V]float64)
-	Update(vertex V, edges map[V]float64)
-	Delete(vertex V)
-}
-
-type IMultiGraph[V Vertex] interface {
-	Insert(vertex V, edges ...WeightedEdge[V])
+	Insert(vertex V, edges ...Edge[V])
 	Update(vertex V, edgeIndexes []int, weights []float64)
 	Delete(vertex V)
 }
 
-type simple[V Vertex] map[V]map[V]float64
-type multi[V Vertex] map[V][]WeightedEdge[V]
+type adjacencyList[V Vertex] map[V][]Edge[V]
+
+func checkVertex[V Vertex](graph adjacencyList[V], vertex V) {
+	if _, exist := graph[vertex]; !exist {
+		log.Fatal("Vertex does not exist in graph!")
+	}
+}
+
+func deleteVertex[V Vertex](graph adjacencyList[V], vertex V) {
+	checkVertex[V](graph, vertex)
+	delete(graph, vertex)
+}
+
+func insertToGraph[V Vertex](graph map[V][]Edge[V], vertex V, edges ...Edge[V]) {
+	if _, exist := graph[vertex]; !exist {
+		graph[vertex] = edges
+	} else {
+		graph[vertex] = append(graph[vertex], edges...)
+	}
+
+	for _, edge := range edges {
+		if _, exist := graph[edge.endVertex]; !exist {
+			graph[edge.endVertex] = make([]Edge[V], 0)
+		}
+	}
+}
