@@ -11,11 +11,12 @@ type Vertex interface {
 }
 
 type Edge[V Vertex] struct {
-	endVertex V
-	weight    float64
+	EndVertex V
+	Weight    float64
 }
 
 type IGraph[V Vertex] interface {
+	GetEdges(vertex V) []Edge[V]
 	Insert(vertex V, edges ...Edge[V])
 	Update(vertex V, edgeIndexes []int, weights []float64)
 	Delete(vertex V)
@@ -42,8 +43,8 @@ func insertToGraph[V Vertex](graph map[V][]Edge[V], vertex V, edges ...Edge[V]) 
 	}
 
 	for _, edge := range edges {
-		if _, exist := graph[edge.endVertex]; !exist {
-			graph[edge.endVertex] = make([]Edge[V], 0)
+		if _, exist := graph[edge.EndVertex]; !exist {
+			graph[edge.EndVertex] = make([]Edge[V], 0)
 		}
 	}
 }

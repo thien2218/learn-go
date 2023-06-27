@@ -31,10 +31,10 @@ func main() {
 // 		edges = make(map[int]float64)
 // 	}
 
-// 	endVertex, err := strconv.Atoi(line[1])
+// 	EndVertex, err := strconv.Atoi(line[1])
 // 	handleError(err)
 
-// 	edges[endVertex] = 0
+// 	edges[EndVertex] = 0
 // }
 
 // vertex, err := strconv.Atoi(curr)
