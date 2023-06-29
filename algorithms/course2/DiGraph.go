@@ -2,11 +2,11 @@ package algorithms
 
 import "log"
 
-type diGraph[V Vertex] struct {
+type diGraph[V Node] struct {
 	graph adjacencyList[V]
 }
 
-func NewDiGraph[V Vertex]() *diGraph[V] {
+func NewDiGraph[V Node]() *diGraph[V] {
 	mg := new(diGraph[V])
 	mg.graph = make(adjacencyList[V])
 	return mg

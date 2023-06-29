@@ -2,10 +2,10 @@ package algorithms
 
 import "math"
 
-type minHeapGraph[V Vertex] []Edge[V]
+type minHeapGraph[V Node] []Edge[V]
 
 // Constructor
-func NewMinHeapGraph[V Vertex](edges []Edge[V]) minHeapGraph[V] {
+func NewMinHeapGraph[V Node](edges []Edge[V]) minHeapGraph[V] {
 	var heap minHeapGraph[V] = edges
 	heap.heapify()
 	return heap
@@ -98,7 +98,7 @@ func (h *minHeapGraph[V]) Pop() Edge[V] {
 	return first
 }
 
-func Dijkstra[V Vertex](graph IGraph[V], source V, target V) float64 {
+func Dijkstra[V Node](graph IGraph[V], source V, target V) float64 {
 	// Initialize visited tracker and a queue just like BFS
 	// but instead of using a queue, we use a heap
 	heap := NewMinHeapGraph[V](graph.GetEdges(source))

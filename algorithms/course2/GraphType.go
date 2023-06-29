@@ -6,36 +6,36 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
-type Vertex interface {
-	constraints.Ordered | *interface{}
+type Node interface {
+	constraints.Ordered
 }
 
-type Edge[V Vertex] struct {
+type Edge[V Node] struct {
 	EndVertex V
 	Weight    float64
 }
 
-type IGraph[V Vertex] interface {
+type IGraph[V Node] interface {
 	GetEdges(vertex V) []Edge[V]
 	Insert(vertex V, edges ...Edge[V])
 	Update(vertex V, edgeIndexes []int, weights []float64)
 	Delete(vertex V)
 }
 
-type adjacencyList[V Vertex] map[V][]Edge[V]
+type adjacencyList[V Node] map[V][]Edge[V]
 
-func checkVertex[V Vertex](graph adjacencyList[V], vertex V) {
+func checkVertex[V Node](graph adjacencyList[V], vertex V) {
 	if _, exist := graph[vertex]; !exist {
 		log.Fatal("Vertex does not exist in graph!")
 	}
 }
 
-func deleteVertex[V Vertex](graph adjacencyList[V], vertex V) {
+func deleteVertex[V Node](graph adjacencyList[V], vertex V) {
 	checkVertex[V](graph, vertex)
 	delete(graph, vertex)
 }
 
-func insertToGraph[V Vertex](graph map[V][]Edge[V], vertex V, edges ...Edge[V]) {
+func insertToGraph[V Node](graph map[V][]Edge[V], vertex V, edges ...Edge[V]) {
 	if _, exist := graph[vertex]; !exist {
 		graph[vertex] = edges
 	} else {

@@ -2,11 +2,11 @@ package algorithms
 
 import "log"
 
-type graph[V Vertex] struct {
+type graph[V Node] struct {
 	graph adjacencyList[V]
 }
 
-func NewGraph[V Vertex]() *graph[V] {
+func NewGraph[V Node]() *graph[V] {
 	g := new(graph[V])
 	g.graph = make(adjacencyList[V])
 	return g

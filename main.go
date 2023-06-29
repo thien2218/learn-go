@@ -1,11 +1,29 @@
 package main
 
 import (
+	"bufio"
 	"log"
+	"os"
+	"strconv"
+
+	algorithms "github.com/thien2218/learn-go/algorithms/course2"
 )
 
 func main() {
+	file, err := os.Open("excercises/median.txt")
+	handleError(err)
+	defer file.Close()
 
+	arr := make([]int, 0)
+
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		num, err := strconv.Atoi(scanner.Text())
+		handleError(err)
+		arr = append(arr, num)
+	}
+
+	algorithms.Median(arr)
 }
 
 // curr := "1"

@@ -1,22 +1,19 @@
 package algorithms
 
-import (
-	"log"
-	"math"
-)
+import "log"
 
-type heap struct {
-	nodes    []int
+type heap[N Node] struct {
+	nodes    []N
 	heapType string
 }
 
 // CONSTRUCTOR
-func NewHeap(arr []int, heapType string) heap {
+func NewHeap[N Node](heapType string, arr ...N) heap[N] {
 	if heapType != "min" && heapType != "max" {
 		log.Fatal("Invalid type of heap.")
 	}
 
-	var h heap
+	var h heap[N]
 	h.nodes = arr
 	h.heapType = heapType
 	h.heapify()
@@ -24,36 +21,16 @@ func NewHeap(arr []int, heapType string) heap {
 }
 
 // PRIVATE
-func (h heap) heapify() {
-	i := 0
+func (h heap[N]) heapify() {
 	nodes := h.nodes
 	l := len(nodes)
 
-	left := 2*i + 1
-	right := 2*i + 2
-
-	for l > 0 && (left < l || right < l) {
-		if left < l && right < l {
-			if h.comp(nodes[left], nodes[i]) && h.comp(nodes[left], nodes[right]) {
-				h.moveUp(left)
-			} else if h.comp(nodes[right], nodes[i]) {
-				h.moveUp(right)
-			}
-		} else if left < l && h.comp(nodes[left], nodes[i]) {
-			h.moveUp(left)
-		} else if right < l && h.comp(nodes[right], nodes[i]) {
-			h.moveUp(right)
-		} else {
-			break
-		}
-
-		i++
-		left = 2*i + 1
-		right = 2*i + 2
+	for i := (l / 2) - 1; l > 0 && i >= 0; i-- {
+		h.moveDown(i)
 	}
 }
 
-func (h heap) comp(val1, val2 int) bool {
+func (h heap[N]) comp(val1, val2 N) bool {
 	if h.heapType == "min" {
 		return val1 < val2
 	}
@@ -61,58 +38,51 @@ func (h heap) comp(val1, val2 int) bool {
 	return val1 > val2
 }
 
-func (h heap) moveUp(id int) {
-	nodes := h.nodes
+func (h *heap[N]) moveUp(id int) {
+	nodes := (*h).nodes
 
-	for parentId := int(math.Floor(float64(id-1) / 2)); h.comp(nodes[id], nodes[parentId]); {
-		nodes[id], nodes[parentId] = nodes[parentId], nodes[id]
-		id = parentId
-		parentId = int(math.Floor(float64(id-1) / 2))
+	for pid := (id - 1) / 2; pid >= 0 && (*h).comp(nodes[id], nodes[pid]); pid = (id - 1) / 2 {
+		nodes[id], nodes[pid] = nodes[pid], nodes[id]
+		id = pid
 	}
 }
 
-func (h heap) moveDown(id int) {
-	nodes := h.nodes
+func (h *heap[N]) moveDown(id int) {
+	var left, right int
+	nodes := (*h).nodes
 	l := len(nodes)
 
-	left := 2*id + 1
-	right := 2*id + 2
-
 	for left < l || right < l {
-		if left < l && right < l {
-			if !h.comp(nodes[left], nodes[id]) && !h.comp(nodes[left], nodes[right]) {
-				nodes[left], nodes[id] = nodes[id], nodes[left]
-				id = left
-			} else if !h.comp(nodes[right], nodes[id]) {
-				nodes[right], nodes[id] = nodes[id], nodes[right]
-				id = right
-			}
-		} else if left < l && !h.comp(nodes[left], nodes[id]) {
-			nodes[left], nodes[id] = nodes[id], nodes[left]
-			id = left
-		} else if right < l && !h.comp(nodes[right], nodes[id]) {
-			nodes[right], nodes[id] = nodes[id], nodes[right]
-			id = right
+		minOrMax := id
+		left = 2*id + 1
+		right = 2*id + 2
+
+		if left < l && (*h).comp(nodes[left], nodes[minOrMax]) {
+			minOrMax = left
+		}
+		if right < l && (*h).comp(nodes[right], nodes[minOrMax]) {
+			minOrMax = right
+		}
+		if minOrMax != id {
+			nodes[minOrMax], nodes[id] = nodes[id], nodes[minOrMax]
+			id = minOrMax
 		} else {
 			break
 		}
-
-		left = 2*id + 1
-		right = 2*id + 2
 	}
 }
 
 // PUBLIC
-func (h heap) Insert(node int) {
-	h.nodes = append(h.nodes, node)
-	h.moveUp(len(h.nodes) - 1)
+func (h *heap[N]) Insert(node N) {
+	(*h).nodes = append((*h).nodes, node)
+	(*h).moveUp(len((*h).nodes) - 1)
 }
 
-func (h heap) Update(node int, newValue int) bool {
-	for i, heapNode := range h.nodes {
+func (h *heap[N]) Update(node N, newValue N) bool {
+	for i, heapNode := range (*h).nodes {
 		if heapNode == node {
-			h.nodes[i] = newValue
-			h.heapify()
+			(*h).nodes[i] = newValue
+			(*h).heapify()
 			return true
 		}
 	}
@@ -120,14 +90,13 @@ func (h heap) Update(node int, newValue int) bool {
 	return false
 }
 
-func (h heap) DeleteFirst() int {
-	l := len(h.nodes)
-	ptr := &h
-	first := h.nodes[0]
+func (h *heap[N]) Extract() N {
+	l := len((*h).nodes)
+	first := (*h).nodes[0]
 
-	h.nodes[0], h.nodes[l-1] = h.nodes[l-1], h.nodes[0]
-	h.nodes = ptr.nodes[:l-1]
-	h.moveDown(0)
+	(*h).nodes[0], (*h).nodes[l-1] = (*h).nodes[l-1], (*h).nodes[0]
+	(*h).nodes = (*h).nodes[:l-1]
+	(*h).moveDown(0)
 
 	return first
 }
