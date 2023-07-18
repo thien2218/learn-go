@@ -2,15 +2,16 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
 	"strconv"
 
-	algorithms "github.com/thien2218/learn-go/algorithms/course2"
+	"github.com/thien2218/learn-go/algorithms"
 )
 
 func main() {
-	file, err := os.Open("excercises/median.txt")
+	file, err := os.Open("excercises/twosum.txt")
 	handleError(err)
 	defer file.Close()
 
@@ -23,7 +24,8 @@ func main() {
 		arr = append(arr, num)
 	}
 
-	algorithms.Median(arr)
+	count := algorithms.TwoSumInterval(arr)
+	fmt.Println(count)
 }
 
 // curr := "1"
