@@ -2,18 +2,13 @@ package algorithms
 
 import "log"
 
-type heap[N Node] struct {
-	nodes    []N
-	heapType string
-}
-
 // CONSTRUCTOR
-func NewHeap[N Node](heapType string, arr ...N) heap[N] {
+func NewHeap[N Node](heapType string, arr ...N) Heap[N] {
 	if heapType != "min" && heapType != "max" {
 		log.Fatal("Invalid type of heap.")
 	}
 
-	var h heap[N]
+	var h Heap[N]
 	h.nodes = arr
 	h.heapType = heapType
 	h.heapify()
@@ -21,7 +16,7 @@ func NewHeap[N Node](heapType string, arr ...N) heap[N] {
 }
 
 // PRIVATE
-func (h heap[N]) heapify() {
+func (h Heap[N]) heapify() {
 	nodes := h.nodes
 	l := len(nodes)
 
@@ -30,7 +25,7 @@ func (h heap[N]) heapify() {
 	}
 }
 
-func (h heap[N]) comp(val1, val2 N) bool {
+func (h Heap[N]) comp(val1, val2 N) bool {
 	if h.heapType == "min" {
 		return val1 < val2
 	}
@@ -38,7 +33,7 @@ func (h heap[N]) comp(val1, val2 N) bool {
 	return val1 > val2
 }
 
-func (h *heap[N]) moveUp(id int) {
+func (h *Heap[N]) moveUp(id int) {
 	nodes := (*h).nodes
 
 	for pid := (id - 1) / 2; pid >= 0 && (*h).comp(nodes[id], nodes[pid]); pid = (id - 1) / 2 {
@@ -47,7 +42,7 @@ func (h *heap[N]) moveUp(id int) {
 	}
 }
 
-func (h *heap[N]) moveDown(id int) {
+func (h *Heap[N]) moveDown(id int) {
 	var left, right int
 	nodes := (*h).nodes
 	l := len(nodes)
@@ -73,12 +68,12 @@ func (h *heap[N]) moveDown(id int) {
 }
 
 // PUBLIC
-func (h *heap[N]) Insert(node N) {
+func (h *Heap[N]) Insert(node N) {
 	(*h).nodes = append((*h).nodes, node)
 	(*h).moveUp(len((*h).nodes) - 1)
 }
 
-func (h *heap[N]) Update(node N, newValue N) bool {
+func (h *Heap[N]) Update(node N, newValue N) bool {
 	for i, heapNode := range (*h).nodes {
 		if heapNode == node {
 			(*h).nodes[i] = newValue
@@ -90,7 +85,7 @@ func (h *heap[N]) Update(node N, newValue N) bool {
 	return false
 }
 
-func (h *heap[N]) Extract() N {
+func (h *Heap[N]) Extract() N {
 	l := len((*h).nodes)
 	first := (*h).nodes[0]
 
