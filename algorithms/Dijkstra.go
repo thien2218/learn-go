@@ -1,7 +1,5 @@
 package algorithms
 
-import "math"
-
 type minHeapGraph[V Node] []Edge[V]
 
 // Constructor
@@ -13,71 +11,41 @@ func NewMinHeapGraph[V Node](edges []Edge[V]) minHeapGraph[V] {
 
 // PRIVATE
 func (h minHeapGraph[V]) heapify() {
-	i := 0
 	l := len(h)
 
-	left := 2*i + 1
-	right := 2*i + 2
-
-	for l > 0 && (left < l || right < l) {
-		if left < l && right < l {
-			if h[left].Weight < h[i].Weight && h[left].Weight < h[right].Weight {
-				h.moveUp(left)
-			} else if h[right].Weight < h[i].Weight {
-				h.moveUp(right)
-			}
-		} else if left < l && h[left].Weight < h[i].Weight {
-			h.moveUp(left)
-		} else if right < l && h[right].Weight < h[i].Weight {
-			h.moveUp(right)
-		} else {
-			break
-		}
-
-		i++
-		left = 2*i + 1
-		right = 2*i + 2
+	for i := (l / 2) - 1; l > 0 && i >= 0; i-- {
+		h.moveDown(i)
 	}
 }
 
 func (h minHeapGraph[V]) moveUp(id int) {
-	parentId := int(math.Floor(float64(id-1) / 2))
-
-	for parentId >= 0 && h[id].Weight < h[parentId].Weight {
-		h[id], h[parentId] = h[parentId], h[id]
-		id = parentId
-		parentId = int(math.Floor(float64(id-1) / 2))
+	for pid := (id - 1) / 2; pid >= 0 && h[id].Weight < h[pid].Weight; pid = (id - 1) / 2 {
+		h[id], h[pid] = h[pid], h[id]
+		id = pid
 	}
 }
 
 func (h minHeapGraph[V]) moveDown(id int) {
+	var left, right int
 	l := len(h)
-	left := 2*id + 1
-	right := 2*id + 2
 
 	for left < l || right < l {
-		if left < l && right < l {
-			if h[left].Weight < h[id].Weight && h[left].Weight < h[right].Weight {
-				h[left], h[id] = h[id], h[left]
-				id = left
-			} else if h[right].Weight < h[id].Weight {
-				h[right], h[id] = h[id], h[right]
-				id = right
-			} else {
-				break
-			}
-		} else if left < l && h[left].Weight < h[id].Weight {
-			h[left], h[id] = h[id], h[left]
-			id = left
-		} else if right < l && h[right].Weight < h[id].Weight {
-			h[right], h[id] = h[id], h[right]
-			id = right
+		min := id
+		left = 2*id + 1
+		right = 2*id + 2
+
+		if left < l && h[left].Weight < h[min].Weight {
+			min = left
+		}
+		if right < l && h[right].Weight < h[min].Weight {
+			min = right
+		}
+		if min != id {
+			h[min], h[id] = h[id], h[min]
+			id = min
 		} else {
 			break
 		}
-
-		left = 2*id + 1
-		right = 2*id + 2
 	}
 }
 
@@ -87,7 +55,7 @@ func (h *minHeapGraph[V]) Insert(edge Edge[V]) {
 	h.moveUp(len(*h) - 1)
 }
 
-func (h *minHeapGraph[V]) Pop() Edge[V] {
+func (h *minHeapGraph[V]) Extract() Edge[V] {
 	l := len(*h)
 	first := (*h)[0]
 
@@ -98,7 +66,7 @@ func (h *minHeapGraph[V]) Pop() Edge[V] {
 	return first
 }
 
-func Dijkstra[V Node](graph IGraph[V], source V, target V) float64 {
+func Dijkstra[V Node](graph Graph[V], source V, target V) float64 {
 	// Initialize visited tracker and a queue just like BFS
 	// but instead of using a queue, we use a heap
 	heap := NewMinHeapGraph[V](graph.GetEdges(source))
@@ -110,7 +78,7 @@ func Dijkstra[V Node](graph IGraph[V], source V, target V) float64 {
 
 	// Loop until the heap is empty
 	for len(heap) > 0 && minEdge.EndVertex != target {
-		minEdge = heap.Pop()
+		minEdge = heap.Extract()
 		distances[minEdge.EndVertex] = minEdge.Weight
 
 		for _, edge := range graph.GetEdges(minEdge.EndVertex) {

@@ -6,26 +6,44 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/thien2218/learn-go/algorithms"
 )
 
 func main() {
-	file, err := os.Open("excercises/twosum.txt")
+	file, err := os.Open("excercises/prim-mst.txt")
 	handleError(err)
 	defer file.Close()
 
-	arr := make([]int, 0)
+	graph := algorithms.NewGraph[int]("undirected")
 
 	scanner := bufio.NewScanner(file)
+	scanner.Scan()
 	for scanner.Scan() {
-		num, err := strconv.Atoi(scanner.Text())
-		handleError(err)
-		arr = append(arr, num)
+		line := scanner.Text()
+		nums := strings.Fields(line)
+
+		vertex, err1 := strconv.Atoi(nums[0])
+		handleError(err1)
+		endVertex, err2 := strconv.Atoi(nums[1])
+		handleError(err2)
+		weight, err3 := strconv.ParseFloat(nums[2], 64)
+		handleError(err3)
+
+		edge := algorithms.Edge[int]{EndVertex: endVertex, Weight: weight}
+
+		graph.Insert(vertex, edge)
 	}
 
-	count := algorithms.TwoSumInterval(arr)
-	fmt.Println(count)
+	cost := algorithms.PrimMst[int](*graph, 1)
+	fmt.Println(cost)
+}
+
+func handleError(err error) {
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 // curr := "1"
@@ -63,9 +81,3 @@ func main() {
 // diGraph.Insert(vertex, edges)
 
 // algorithms.ComputeScc[int](diGraph)
-
-func handleError(err error) {
-	if err != nil {
-		log.Fatal(err)
-	}
-}

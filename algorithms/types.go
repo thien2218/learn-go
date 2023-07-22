@@ -11,13 +11,6 @@ type Edge[V Node] struct {
 	Weight    float64
 }
 
-type IGraph[V Node] interface {
-	GetEdges(vertex V) []Edge[V]
-	Insert(vertex V, edges ...Edge[V])
-	Update(vertex V, edgeIndexes []int, weights []float64)
-	Delete(vertex V)
-}
-
 type adjacencyList[V Node] map[V][]Edge[V]
 
 type Graph[V Node] struct {

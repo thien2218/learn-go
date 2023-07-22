@@ -54,11 +54,11 @@ func (g Graph[V]) Insert(vertex V, edges ...Edge[V]) {
 	vertices := g.vertices
 	insertToGraph[V](vertices, vertex, edges...)
 
-	if g.graphType == "directed" {
-		for weight, edge := range edges {
+	if g.graphType == "undirected" {
+		for _, edge := range edges {
 			newEdge := new(Edge[V])
 			newEdge.EndVertex = vertex
-			newEdge.Weight = float64(weight)
+			newEdge.Weight = float64(edge.Weight)
 			vertices[edge.EndVertex] = append(vertices[edge.EndVertex], *newEdge)
 		}
 	}
