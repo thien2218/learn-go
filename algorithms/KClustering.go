@@ -37,8 +37,8 @@ func KClustering[V Node](links []Link[V], uf UnionFind[V], k int) float64 {
 			if len(uf.leaders) > k {
 				uf.Union(v1, v2)
 			} else {
-				str1 := fmt.Sprintf("%v", uf.clusters[v1])
-				str2 := fmt.Sprintf("%v", uf.clusters[v2])
+				str1 := fmt.Sprintf("%v", uf.nodes[v1])
+				str2 := fmt.Sprintf("%v", uf.nodes[v2])
 
 				key1 := str1 + "/" + str2
 				key2 := str2 + "/" + str1
