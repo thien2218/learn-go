@@ -4,8 +4,8 @@ import "fmt"
 
 func Median(arr []int) {
 	var median, sum int
-	minHeap := NewHeap[int]("min") // used to get minimum of the bigger half
-	maxHeap := NewHeap[int]("max") // used to get maximum of the smaller half
+	minHeap := NewOrderedMinHeap[int]() // used to get minimum of the bigger half
+	maxHeap := NewOrderedMaxHeap[int]() // used to get maximum of the smaller half
 
 	for _, num := range arr {
 		lMin := len(minHeap.nodes)

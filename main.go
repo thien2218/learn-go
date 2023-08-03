@@ -2,29 +2,21 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"os"
-
-	"github.com/thien2218/learn-go/algorithms"
 )
 
 func main() {
-	file, err := os.Open("excercises/clustering2.txt")
+	file, err := os.Open("excercises/huffman.txt")
 	handleError(err)
 	defer file.Close()
-
-	uf := algorithms.NewUnionFind[string]()
 
 	scanner := bufio.NewScanner(file)
 	scanner.Scan()
 
 	for scanner.Scan() {
-		line := scanner.Text()
-		algorithms.HammingDistance(line, *uf)
-	}
 
-	fmt.Println(len(uf.GetLeaders()))
+	}
 }
 
 func handleError(err error) {
