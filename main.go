@@ -2,21 +2,43 @@ package main
 
 import (
 	"bufio"
+	"fmt"
 	"log"
 	"os"
+	"strconv"
+
+	"github.com/thien2218/learn-go/algorithms"
 )
 
 func main() {
-	file, err := os.Open("excercises/huffman.txt")
+	file, err := os.Open("excercises/mwis.txt")
 	handleError(err)
 	defer file.Close()
+
+	var i int
+	pathGraph := make(map[int]algorithms.PathWVertex[int])
 
 	scanner := bufio.NewScanner(file)
 	scanner.Scan()
 
 	for scanner.Scan() {
+		i++
 
+		line := scanner.Text()
+		weight, err := strconv.ParseFloat(line, 64)
+		handleError(err)
+
+		vertex := new(algorithms.PathWVertex[int])
+		vertex.Weight = weight
+		vertex.Edges[0].EndVertex = i - 1
+		vertex.Edges[1].EndVertex = i + 1
+
+		pathGraph[i] = *vertex
 	}
+
+	cache := algorithms.Mwis[int](pathGraph, 1)
+	vertexIds := algorithms.MwisReconstruct[int](pathGraph, len(pathGraph), cache)
+	fmt.Println(vertexIds)
 }
 
 func handleError(err error) {
@@ -24,39 +46,3 @@ func handleError(err error) {
 		log.Fatal(err)
 	}
 }
-
-// curr := "1"
-// edges := make(map[int]float64)
-// diGraph := algorithms.NewDiGraph[int]()
-
-// file, err := os.Open("scc.txt")
-// handleError(err)
-// defer file.Close()
-
-// scanner := bufio.NewScanner(file)
-
-// for scanner.Scan() {
-// 	line := strings.Split(strings.TrimSpace(scanner.Text()), " ")
-
-// 	if line[0] != curr {
-// 		vertex, err := strconv.Atoi(curr)
-// 		handleError(err)
-
-// 		diGraph.Insert(vertex, edges)
-
-// 		curr = line[0]
-// 		edges = make(map[int]float64)
-// 	}
-
-// 	EndVertex, err := strconv.Atoi(line[1])
-// 	handleError(err)
-
-// 	edges[EndVertex] = 0
-// }
-
-// vertex, err := strconv.Atoi(curr)
-// handleError(err)
-
-// diGraph.Insert(vertex, edges)
-
-// algorithms.ComputeScc[int](diGraph)
