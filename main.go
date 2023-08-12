@@ -6,39 +6,39 @@ import (
 	"log"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/thien2218/learn-go/algorithms"
 )
 
 func main() {
-	file, err := os.Open("excercises/mwis.txt")
+	file, err := os.Open("excercises/test.txt")
 	handleError(err)
 	defer file.Close()
-
-	var i int
-	pathGraph := make(map[int]algorithms.PathWVertex[int])
 
 	scanner := bufio.NewScanner(file)
 	scanner.Scan()
 
-	for scanner.Scan() {
-		i++
+	capacity, err := strconv.Atoi(strings.Fields(scanner.Text())[0])
+	handleError(err)
 
+	items := make([][2]int, 0)
+
+	for scanner.Scan() {
 		line := scanner.Text()
-		weight, err := strconv.ParseFloat(line, 64)
+		fields := strings.Fields(line)
+
+		value, err := strconv.Atoi(fields[0])
 		handleError(err)
 
-		vertex := new(algorithms.PathWVertex[int])
-		vertex.Weight = weight
-		vertex.Edges[0].EndVertex = i - 1
-		vertex.Edges[1].EndVertex = i + 1
+		weight, err := strconv.Atoi(fields[1])
+		handleError(err)
 
-		pathGraph[i] = *vertex
+		item := [2]int{value, weight}
+		items = append(items, item)
 	}
 
-	cache := algorithms.Mwis[int](pathGraph, 1)
-	vertexIds := algorithms.MwisReconstruct[int](pathGraph, len(pathGraph), cache)
-	fmt.Println(vertexIds)
+	fmt.Println(algorithms.Knapsack(items, capacity))
 }
 
 func handleError(err error) {
